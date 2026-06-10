@@ -219,23 +219,20 @@ function initData() {
       S.set('data_v8', true);
     }
 
-    // v9 遷移：新增小孩4、小孩5
-    if (!S.get('data_v9')) {
-      const children = S.getOrDefault('children', []);
+    // v9 遷移：新增小孩4、小孩5（已由 v10 反轉，跳過）
+    if (!S.get('data_v9')) { S.set('data_v9', true); }
+
+    // v10 遷移：移除小孩3、4、5，回到2位小孩
+    if (!S.get('data_v10')) {
+      const keepIds = [1, 2];
+      const children = S.getOrDefault('children', []).filter(c => keepIds.includes(c.id));
       const coins    = S.getOrDefault('coins', {});
       const lc       = S.getOrDefault('lifetimeCoins', {});
-      if (!children.find(c => c.id === 4)) {
-        children.push({ id: 4, name: '小勇者四', emoji: '🐰', grade: 'low' });
-        coins[4] = 0; lc[4] = 0;
-      }
-      if (!children.find(c => c.id === 5)) {
-        children.push({ id: 5, name: '小勇者五', emoji: '🐹', grade: 'low' });
-        coins[5] = 0; lc[5] = 0;
-      }
+      [3, 4, 5].forEach(id => { delete coins[id]; delete lc[id]; });
       S.set('children', children);
       S.set('coins', coins);
       S.set('lifetimeCoins', lc);
-      S.set('data_v9', true);
+      S.set('data_v10', true);
     }
     return;
   }
@@ -244,12 +241,9 @@ function initData() {
   S.set('children', [
     { id: 1, name: '小勇者一', emoji: '🦁', grade: 'low' },
     { id: 2, name: '小勇者二', emoji: '🐯', grade: 'low' },
-    { id: 3, name: '小勇者三', emoji: '🐼', grade: 'low' },
-    { id: 4, name: '小勇者四', emoji: '🐰', grade: 'low' },
-    { id: 5, name: '小勇者五', emoji: '🐹', grade: 'low' },
   ]);
-  S.set('coins',         { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
-  S.set('lifetimeCoins', { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
+  S.set('coins',         { 1: 0, 2: 0 });
+  S.set('lifetimeCoins', { 1: 0, 2: 0 });
   S.set('tasks', getDefaultTasks());
   S.set('rewards', getDefaultRewards());
   S.set('messages', getDefaultMessages());
@@ -264,6 +258,7 @@ function initData() {
   S.set('data_v7',        true);
   S.set('data_v8',        true);
   S.set('data_v9',        true);
+  S.set('data_v10',       true);
   S.set('initialized',    true);
 }
 
@@ -300,14 +295,8 @@ function saveSetup() {
   const p   = document.getElementById('setup-parent-pin').value.trim();
   const c1n = document.getElementById('setup-child1-name').value.trim() || '小勇者一';
   const c2n = document.getElementById('setup-child2-name').value.trim() || '小勇者二';
-  const c3n = document.getElementById('setup-child3-name').value.trim() || '小勇者三';
-  const c4n = document.getElementById('setup-child4-name').value.trim() || '小勇者四';
-  const c5n = document.getElementById('setup-child5-name').value.trim() || '小勇者五';
   const c1g = document.querySelector('input[name="child1-grade"]:checked')?.value || 'low';
   const c2g = document.querySelector('input[name="child2-grade"]:checked')?.value || 'low';
-  const c3g = document.querySelector('input[name="child3-grade"]:checked')?.value || 'low';
-  const c4g = document.querySelector('input[name="child4-grade"]:checked')?.value || 'low';
-  const c5g = document.querySelector('input[name="child5-grade"]:checked')?.value || 'low';
 
   if (p.length < 4) { alert('請輸入4位爸媽密碼'); return; }
 
@@ -315,9 +304,6 @@ function saveSetup() {
   const children = S.getOrDefault('children', []);
   if (children[0]) { children[0].name = c1n; children[0].grade = c1g; }
   if (children[1]) { children[1].name = c2n; children[1].grade = c2g; }
-  if (children[2]) { children[2].name = c3n; children[2].grade = c3g; }
-  if (children[3]) { children[3].name = c4n; children[3].grade = c4g; }
-  if (children[4]) { children[4].name = c5n; children[4].grade = c5g; }
   S.set('children', children);
 
   renderWelcome();
