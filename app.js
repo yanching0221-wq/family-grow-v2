@@ -1092,13 +1092,44 @@ function rejectReward(id) {
 }
 
 // ── Parent: tasks ─────────────────────────────────────────────
+// 修改小孩年級
+function setChildGrade(childId, grade) {
+  const children = S.getOrDefault('children', []);
+  const child = children.find(c => c.id === childId);
+  if (child) { child.grade = grade; S.set('children', children); }
+  renderParentTasks(); // 重新渲染讓 UI 更新
+}
+
 function renderParentTasks() {
-  const tasks = S.getOrDefault('tasks', []);
+  const tasks    = S.getOrDefault('tasks', []);
+  const children = S.getOrDefault('children', []);
   const byCategory = {};
   tasks.forEach(t => {
     if (!byCategory[t.category]) byCategory[t.category] = [];
     byCategory[t.category].push(t);
   });
+
+  // ── 年級管理卡片 ──
+  const gradeCards = children.map(c => {
+    const isLow  = (c.grade || 'low') === 'low';
+    const isHigh = !isLow;
+    return `<div class="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
+      <span class="text-2xl">${c.emoji}</span>
+      <span class="font-medium flex-1">${c.name}</span>
+      <div class="flex gap-2">
+        <button onclick="setChildGrade(${c.id},'low')"
+          class="px-3 py-1 rounded-full text-xs font-bold border-2 transition
+                 ${isLow ? 'bg-green-500 text-white border-green-500' : 'bg-white text-gray-400 border-gray-200'}">
+          🌱 低年級
+        </button>
+        <button onclick="setChildGrade(${c.id},'high')"
+          class="px-3 py-1 rounded-full text-xs font-bold border-2 transition
+                 ${isHigh ? 'bg-purple-500 text-white border-purple-500' : 'bg-white text-gray-400 border-gray-200'}">
+          🎓 高年級
+        </button>
+      </div>
+    </div>`;
+  }).join('');
 
   const dayCheckboxes = DAY_FULL.map((d,i) =>
     `<label class="flex items-center gap-1 text-sm cursor-pointer">
@@ -1106,7 +1137,13 @@ function renderParentTasks() {
      </label>`
   ).join('');
 
-  let html = `<button onclick="showAddTaskForm()" class="w-full bg-brand text-white py-3 rounded-2xl font-bold mb-5">＋ 新增任務</button>
+  let html = `
+  <div class="bg-white rounded-2xl shadow-sm p-4 mb-5">
+    <div class="font-bold text-sm text-gray-600 mb-1">👶 小孩年級設定</div>
+    <div class="text-xs text-gray-400 mb-3">點選按鈕即可切換年級，任務會立即更新</div>
+    ${gradeCards}
+  </div>
+  <button onclick="showAddTaskForm()" class="w-full bg-brand text-white py-3 rounded-2xl font-bold mb-5">＋ 新增任務</button>
   <div id="add-task-form" class="hidden bg-white rounded-2xl shadow-sm p-5 mb-5">
     <h3 class="font-bold mb-4">新增任務</h3>
     <div class="space-y-3">
