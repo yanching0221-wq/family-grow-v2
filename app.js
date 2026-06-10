@@ -10,12 +10,12 @@ const DAY_FULL  = ['週日','週一','週二','週三','週四','週五','週六
 
 // ── 等級里程碑（依 1–4 點/任務 校正）─────────────────────────
 const TIERS = [
-  { pts:0,   label:'勤勞小芽', emoji:'🌱', desc:'萬事起頭難，你做到了！',     bg:'bg-green-50',  text:'text-green-700'  },
-  { pts:15,  label:'習慣新星', emoji:'⭐', desc:'好習慣正在養成中，加油！',    bg:'bg-yellow-50', text:'text-yellow-700' },
-  { pts:40,  label:'努力小將', emoji:'🥉', desc:'持之以恆，超棒的！',          bg:'bg-orange-50', text:'text-orange-700' },
-  { pts:90,  label:'認真達人', emoji:'🥈', desc:'認真是最好的天賦！',          bg:'bg-blue-50',   text:'text-blue-700'   },
-  { pts:160, label:'習慣大師', emoji:'🥇', desc:'你已是大家的榜樣！',          bg:'bg-purple-50', text:'text-purple-700' },
-  { pts:250, label:'傳說勇者', emoji:'👑', desc:'無人能及的習慣勇者！',         bg:'bg-red-50',    text:'text-red-700'    },
+  { pts:0,   label:'新手村民',   emoji:'🌱', desc:'冒險旅程的第一步，出發！',      bg:'bg-green-50',  text:'text-green-700'  },
+  { pts:15,  label:'初級冒險者', emoji:'⭐', desc:'好習慣正在養成中，繼續！',      bg:'bg-yellow-50', text:'text-yellow-700' },
+  { pts:40,  label:'勇敢挑戰者', emoji:'🥉', desc:'每一關都難不倒你！',            bg:'bg-orange-50', text:'text-orange-700' },
+  { pts:90,  label:'任務達人',   emoji:'🥈', desc:'任務完成率超高，太厲害了！',    bg:'bg-blue-50',   text:'text-blue-700'   },
+  { pts:160, label:'王牌冒險者', emoji:'🥇', desc:'只差一步，傳說就在眼前！',      bg:'bg-purple-50', text:'text-purple-700' },
+  { pts:250, label:'傳說勇者',   emoji:'👑', desc:'無人能及的冒險傳說！',           bg:'bg-red-50',    text:'text-red-700'    },
 ];
 
 // ── 任務難度說明 ───────────────────────────────────────────────
