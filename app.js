@@ -49,6 +49,28 @@ function checkAndAwardPracticeBonus(childId) {
   return true;
 }
 
+// ── 預設貼心提醒 ───────────────────────────────────────────────
+function getDefaultMessages() {
+  return [
+    { id:1,  emoji:'💬', text:'今天記得說好話，讓別人開心！' },
+    { id:2,  emoji:'🙏', text:'受到別人幫助時，要記得說謝謝～' },
+    { id:3,  emoji:'⭐', text:'每天進步一點點，你就是最棒的！' },
+    { id:4,  emoji:'😊', text:'微笑是免費的禮物，多給別人一個！' },
+    { id:5,  emoji:'🌬️', text:'遇到不開心的事，先深呼吸，再想解決方法' },
+    { id:6,  emoji:'🤝', text:'幫助別人一件小事，今天就很棒了' },
+    { id:7,  emoji:'💭', text:'說話前先想想，這句話會讓人開心還是難過' },
+    { id:8,  emoji:'📚', text:'作業先做完，玩起來才真的開心' },
+    { id:9,  emoji:'💪', text:'不會的題目，試試看再問，不要直接放棄' },
+    { id:10, emoji:'🚀', text:'每天進步一點點，一年後的你會很厲害' },
+    { id:11, emoji:'🔍', text:'錯誤不可怕，重要的是知道哪裡錯了' },
+    { id:12, emoji:'🧹', text:'自己的東西自己整理，找東西就不會手忙腳亂' },
+    { id:13, emoji:'🌙', text:'早睡早起，明天才有精神玩和學習' },
+    { id:14, emoji:'🍚', text:'吃飯時放下手機和平板，專心吃飯' },
+    { id:15, emoji:'🤜', text:'答應別人的事，要記得做到' },
+    { id:16, emoji:'👋', text:'看到長輩主動打招呼，讓大家都開心' },
+  ];
+}
+
 // ── 預設獎勵清單 ───────────────────────────────────────────────
 function getDefaultRewards() {
   return [
@@ -185,6 +207,17 @@ function initData() {
       S.set('tasks', tasks);
       S.set('data_v7', true);
     }
+
+    // v8 遷移：補入新增的貼心提醒
+    if (!S.get('data_v8')) {
+      const msgs      = S.getOrDefault('messages', []);
+      const existIds  = msgs.map(m => m.id);
+      getDefaultMessages().forEach(m => {
+        if (!existIds.includes(m.id)) msgs.push(m);
+      });
+      S.set('messages', msgs);
+      S.set('data_v8', true);
+    }
     return;
   }
 
@@ -198,12 +231,7 @@ function initData() {
   S.set('lifetimeCoins', { 1: 0, 2: 0, 3: 0 });
   S.set('tasks', getDefaultTasks());
   S.set('rewards', getDefaultRewards());
-  S.set('messages', [
-    { id:1, emoji:'💬', text:'今天記得說好話，讓別人開心！' },
-    { id:2, emoji:'🙏', text:'受到別人幫助時，要記得說謝謝～' },
-    { id:3, emoji:'⭐', text:'每天進步一點點，你就是最棒的！' },
-    { id:4, emoji:'😊', text:'微笑是免費的禮物，多給別人一個！' },
-  ]);
+  S.set('messages', getDefaultMessages());
   S.set('completions',    []);
   S.set('redeemedRewards',[]);
   S.set('checkIns',       {});
@@ -213,6 +241,7 @@ function initData() {
   S.set('data_v5',        true);
   S.set('data_v6',        true);
   S.set('data_v7',        true);
+  S.set('data_v8',        true);
   S.set('initialized',    true);
 }
 
