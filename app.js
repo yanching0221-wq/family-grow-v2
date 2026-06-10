@@ -19,7 +19,7 @@ function initData() {
   S.set('children', [
     { id: 1, name: '小勇者一', emoji: '🦁' },
     { id: 2, name: '小勇者二', emoji: '🐯' },
-    { id: 3, name: '昊新',     emoji: '🐼' }
+    { id: 3, name: '小勇者三', emoji: '🐼' }
   ]);
   S.set('coins', { 1: 0, 2: 0, 3: 0 });
   S.set('tasks', [
@@ -77,7 +77,7 @@ function saveSetup() {
   const p   = document.getElementById('setup-parent-pin').value.trim();
   const c1n = document.getElementById('setup-child1-name').value.trim() || '小勇者一';
   const c2n = document.getElementById('setup-child2-name').value.trim() || '小勇者二';
-  const c3n = document.getElementById('setup-child3-name').value.trim() || '昊新';
+  const c3n = document.getElementById('setup-child3-name').value.trim() || '小勇者三';
 
   if (p.length < 4) { alert('請輸入4位爸媽密碼'); return; }
 
