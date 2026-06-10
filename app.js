@@ -86,10 +86,10 @@ function getDefaultTasks() {
     // ── 每週挑戰 ────────────────────────────────────────
     { id:21, name:'本週跳繩5000下',               category:'每週挑戰', coins:4, emoji:'🏅', daysOfWeek:[], type:'weekly', targetGrade:'all', weeklyTarget:10, autoFrom:20 },
     // ── 週末任務 ────────────────────────────────────────
-    { id:13, name:'9點前完成早餐',    category:'週末任務', coins:1, emoji:'🍳', daysOfWeek:[0,6], type:'once', targetGrade:'all', difficulty:'simple' },
-    { id:14, name:'公園放風30分鐘',   category:'週末任務', coins:2, emoji:'🌳', daysOfWeek:[0,6], type:'once', targetGrade:'all', difficulty:'medium' },
-    { id:15, name:'跑步3K',           category:'週末任務', coins:3, emoji:'🏃', daysOfWeek:[0,6], type:'once', targetGrade:'all', difficulty:'hard'   },
-    { id:16, name:'倒垃圾',           category:'週末任務', coins:1, emoji:'🗑️', daysOfWeek:[0,6], type:'once', targetGrade:'all', difficulty:'simple' },
+    { id:13, name:'9點前完成早餐',    category:'週末任務', coins:1, emoji:'🍳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple' },
+    { id:14, name:'公園放風30分鐘',   category:'週末任務', coins:2, emoji:'🌳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium' },
+    { id:15, name:'跑步3K',           category:'週末任務', coins:3, emoji:'🏃', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'hard'   },
+    { id:16, name:'倒垃圾',           category:'週末任務', coins:1, emoji:'🗑️', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple' },
   ];
 }
 
@@ -175,6 +175,16 @@ function initData() {
       S.set('tasks', tasks);
       S.set('data_v6', true);
     }
+
+    // v7 遷移：週末任務不再限定週末出現
+    if (!S.get('data_v7')) {
+      const tasks = S.getOrDefault('tasks', []);
+      tasks.forEach(t => {
+        if (t.category === '週末任務') t.daysOfWeek = [];
+      });
+      S.set('tasks', tasks);
+      S.set('data_v7', true);
+    }
     return;
   }
 
@@ -202,6 +212,7 @@ function initData() {
   S.set('data_v4',        true);
   S.set('data_v5',        true);
   S.set('data_v6',        true);
+  S.set('data_v7',        true);
   S.set('initialized',    true);
 }
 
@@ -523,11 +534,7 @@ function renderChildTasks() {
   const onceTasks    = activeTasks.filter(t => (t.type||'once')==='once' && t.category !== '週末任務');
   const multiTasks   = activeTasks.filter(t => t.type === 'multi');
   const weeklyTasks  = activeTasks.filter(t => t.type === 'weekly');
-  // 週末任務：從全任務（不限今日星期）取，讓非週末也能看到列表
-  const allTasks     = S.getOrDefault('tasks', []).filter(t => {
-    const gradeOk = !t.targetGrade || t.targetGrade === 'all' || t.targetGrade === child?.grade;
-    return gradeOk && t.category === '週末任務';
-  });
+  const allTasks     = activeTasks.filter(t => t.category === '週末任務');
 
   document.getElementById('child-tab-tasks').innerHTML = `
     <div class="sticky top-0 z-20 bg-[#FAF7F4] px-5 pt-3">
@@ -649,17 +656,7 @@ function buildMultiHtml(tasks, todayC) {
 
 // ── 週末任務列表 ───────────────────────────────────────────────
 function buildWeekendHtml(tasks, todayC) {
-  const dow = new Date().getDay();
-  const isWeekend = dow === 0 || dow === 6;
-
-  if (!isWeekend) {
-    return `<div class="flex flex-col items-center py-14 text-center">
-      <div class="text-5xl mb-3">🌅</div>
-      <div class="font-bold text-gray-400 mb-1">週末才有任務喔！</div>
-      <div class="text-xs text-gray-300">週六、週日才會出現</div>
-    </div>`;
-  }
-  if (!tasks.length) return '<p class="text-center text-gray-300 py-12">今天沒有週末任務</p>';
+  if (!tasks.length) return '<p class="text-center text-gray-300 py-12">暫無週末任務</p>';
 
   let html = '<div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50 mt-3">';
   tasks.forEach(task => {
