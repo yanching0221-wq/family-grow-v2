@@ -14,7 +14,17 @@ function initData() {
   if (S.get('initialized') && !S.get('children')) {
     localStorage.clear();
   }
-  if (S.get('initialized')) return;
+  if (S.get('initialized')) {
+    // 自動補上第三個小孩（舊資料只有兩個小孩時）
+    const children = S.getOrDefault('children', []);
+    if (children.length < 3) {
+      children.push({ id: 3, name: '小勇者三', emoji: '🐼' });
+      S.set('children', children);
+      const coins = S.getOrDefault('coins', {});
+      if (!coins[3]) { coins[3] = 0; S.set('coins', coins); }
+    }
+    return;
+  }
 
   S.set('children', [
     { id: 1, name: '小勇者一', emoji: '🦁' },
