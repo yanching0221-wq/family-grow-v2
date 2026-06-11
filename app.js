@@ -376,8 +376,18 @@ function renderChildCoinsOnly() {
 }
 
 async function startNewFamily() {
+  const inputEl   = document.getElementById('new-family-code-input');
+  const customCode = inputEl ? inputEl.value.trim().toUpperCase() : '';
+  const code = customCode || generateFamilyCode();
+
+  // 檢查是否已被使用
   showLoading('建立家庭中...');
-  const code = generateFamilyCode();
+  const snap = await dbGet(ref(_db, `families/${code}`));
+  if (snap.exists()) {
+    hideLoading();
+    alert(`⚠️ 代碼「${code}」已被使用，請換一個`);
+    return;
+  }
   _familyCode = code;
   localStorage.setItem('fg_family_code', code);
   _cache = {};
