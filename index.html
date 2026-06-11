@@ -27,6 +27,37 @@
 </head>
 <body class="max-w-md mx-auto min-h-screen">
 
+  <!-- PAGE: family-select -->
+  <div id="page-family-select" class="page hidden flex flex-col items-center justify-center min-h-screen p-8">
+    <div class="text-6xl mb-6">🏠</div>
+    <h1 class="text-3xl font-bold mb-1">我們這一家</h1>
+    <p class="text-gray-400 text-sm mb-12">FAMILY GROW TOGETHER</p>
+    <div class="w-full space-y-4">
+      <button onclick="startNewFamily()"
+        class="w-full bg-brand text-white py-4 rounded-2xl font-bold text-lg">
+        ✨ 建立新家庭
+      </button>
+      <button onclick="showPage('page-join-family')"
+        class="w-full bg-white border-2 border-brand text-brand py-4 rounded-2xl font-bold text-lg">
+        🔑 加入既有家庭
+      </button>
+    </div>
+  </div>
+
+  <!-- PAGE: join-family -->
+  <div id="page-join-family" class="page hidden p-8">
+    <button onclick="showPage('page-family-select')" class="text-gray-400 mb-8 block">‹ 返回</button>
+    <div class="flex flex-col items-center pt-8">
+      <div class="text-6xl mb-4">🔑</div>
+      <h2 class="text-2xl font-bold mb-1">加入家庭</h2>
+      <p class="text-gray-400 text-sm mb-8 text-center">請輸入爸媽提供的<br>6碼家庭代碼</p>
+      <input id="join-code-input" placeholder="例：AB12CD" maxlength="6"
+        class="w-full border border-gray-200 rounded-xl p-4 text-center text-2xl tracking-widest mb-4 focus:outline-none focus:border-brand uppercase">
+      <button onclick="joinFamilySubmit()"
+        class="w-full bg-brand text-white py-4 rounded-2xl font-bold text-lg">加入家庭 →</button>
+    </div>
+  </div>
+
   <!-- PAGE: welcome -->
   <div id="page-welcome" class="page hidden flex flex-col items-center justify-center min-h-screen p-8">
     <div class="text-6xl mb-6">⭐</div>
@@ -43,10 +74,14 @@
       <div class="text-6xl mb-6">⭐</div>
       <h2 class="text-2xl font-bold mb-2">歡迎來到我們這一家</h2>
       <p class="text-gray-400 text-sm text-center mb-8">首次使用需要設定<br>爸媽與小孩各自的通關密語</p>
+      <div class="w-full bg-brand-light rounded-2xl p-4 mb-4 text-center">
+        <div class="text-xs text-gray-500 mb-1">你的家庭代碼（分享給家人加入）</div>
+        <div id="setup-family-code-display" class="text-2xl font-bold tracking-widest text-brand">------</div>
+      </div>
       <div class="w-full bg-brand-light rounded-2xl p-4 mb-6 space-y-1 text-sm">
         <div>🔒 爸媽密碼：管理後台專用</div>
         <div>🧒 小孩：點名字直接進入</div>
-        <div>💡 資料存在您的裝置上</div>
+        <div>📡 資料即時同步到雲端</div>
       </div>
       <div class="w-full space-y-3 mb-6">
         <div class="bg-white rounded-2xl p-4 space-y-3 shadow-sm">
@@ -184,6 +219,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

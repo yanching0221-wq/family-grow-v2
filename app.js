@@ -1,8 +1,47 @@
-// ── Storage helpers ───────────────────────────────────────────
+// ── Firebase ──────────────────────────────────────────────────
+import { initializeApp }                                from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
+import { getDatabase, ref, set as dbSet, get as dbGet, onValue }
+  from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js';
+
+const _fbApp = initializeApp({
+  apiKey:            'AIzaSyCl0-ivm8G42BwSdeGK-1Qe9Ax3kdEt0E8',
+  authDomain:        'family-grow-dfe51.firebaseapp.com',
+  databaseURL:       'https://family-grow-dfe51-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId:         'family-grow-dfe51',
+  storageBucket:     'family-grow-dfe51.firebasestorage.app',
+  messagingSenderId: '1031974005973',
+  appId:             '1:1031974005973:web:6e0f6de88b18f37beb865c',
+});
+const _db = getDatabase(_fbApp);
+
+// ── Data layer (Firebase-backed) ───────────────────────────────
+let _cache        = {};
+let _familyCode   = localStorage.getItem('fg_family_code');
+let _fbUnsub      = null;
+let _refreshTimer = null;
+
+function familyRef(path) {
+  return ref(_db, path ? `families/${_familyCode}/${path}` : `families/${_familyCode}`);
+}
+
 const S = {
-  get: k => JSON.parse(localStorage.getItem(k) || 'null'),
-  set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
-  getOrDefault: (k, d) => { const v = S.get(k); return v !== null ? v : d; }
+  get(k) {
+    const v = _cache[k];
+    return v !== undefined ? v : null;
+  },
+  set(k, v) {
+    _cache[k] = v;
+    dbSet(familyRef(k), v !== undefined ? v : null);
+  },
+  getOrDefault(k, d) {
+    let v = _cache[k];
+    if (v === undefined || v === null) return d;
+    // Firebase 有時將陣列回傳為物件，在此轉回陣列
+    if (Array.isArray(d) && !Array.isArray(v) && typeof v === 'object') {
+      return Object.values(v).filter(x => x != null);
+    }
+    return v;
+  }
 };
 
 const DAY_NAMES = ['日','一','二','三','四','五','六'];
@@ -288,6 +327,101 @@ function renderWelcome() {
      <div class="text-gray-400 text-sm mt-1">養成管理、給予獎勵</div>
    </button>`;
   document.getElementById('welcome-buttons').innerHTML = html;
+}
+
+// ── Loading overlay ────────────────────────────────────────────
+function showLoading(msg = '載入中...') {
+  let el = document.getElementById('loading-overlay');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'loading-overlay';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;';
+    document.body.appendChild(el);
+  }
+  el.innerHTML = `<div style="font-size:2.5rem;margin-bottom:1rem;animation:pulse 1s infinite">⭐</div><div style="color:#888">${msg}</div>`;
+  el.style.display = 'flex';
+}
+function hideLoading() {
+  const el = document.getElementById('loading-overlay');
+  if (el) el.style.display = 'none';
+}
+
+// ── Family management ──────────────────────────────────────────
+function generateFamilyCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
+  return c;
+}
+
+function setupFamilyListener() {
+  if (_fbUnsub) _fbUnsub();
+  _fbUnsub = onValue(familyRef(''), snap => {
+    _cache = snap.val() || {};
+    clearTimeout(_refreshTimer);
+    _refreshTimer = setTimeout(refreshCurrentView, 600);
+  });
+}
+
+function refreshCurrentView() {
+  const page = document.querySelector('.page:not(.hidden)')?.id;
+  if (page === 'page-welcome')          renderWelcome();
+  else if (page === 'page-parent-main') renderParentMain();
+  else if (page === 'page-child-main')  renderChildCoinsOnly();
+}
+
+function renderChildCoinsOnly() {
+  const id    = window._currentChildId;
+  if (!id) return;
+  const coins = getChildCoins(id);
+  const el    = document.getElementById('child-coins');
+  if (el) el.textContent = coins;
+}
+
+async function startNewFamily() {
+  showLoading('建立家庭中...');
+  const code = generateFamilyCode();
+  _familyCode = code;
+  localStorage.setItem('fg_family_code', code);
+  _cache = {};
+  initData();
+  setupFamilyListener();
+  hideLoading();
+  document.getElementById('setup-family-code-display').textContent = code;
+  showPage('page-setup');
+}
+
+async function joinFamilySubmit() {
+  const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+  if (code.length < 4) { alert('請輸入家庭代碼'); return; }
+  showLoading('連線中...');
+  try {
+    const snap = await dbGet(ref(_db, `families/${code}`));
+    if (!snap.exists()) {
+      hideLoading();
+      alert('⚠️ 找不到此家庭代碼，請確認後再試');
+      return;
+    }
+    _familyCode = code;
+    localStorage.setItem('fg_family_code', code);
+    _cache = snap.val() || {};
+    setupFamilyListener();
+    hideLoading();
+    renderWelcome();
+    showPage('page-welcome');
+  } catch {
+    hideLoading();
+    alert('連線失敗，請確認網路連線後再試');
+  }
+}
+
+function leaveFamily() {
+  if (!confirm('確定要離開此家庭？\n（資料不會刪除，可用代碼重新加入）')) return;
+  if (_fbUnsub) { _fbUnsub(); _fbUnsub = null; }
+  _familyCode = null;
+  _cache = {};
+  localStorage.removeItem('fg_family_code');
+  showPage('page-family-select');
 }
 
 // ── Setup ─────────────────────────────────────────────────────
@@ -1197,7 +1331,15 @@ function renderParentOverview() {
       <div class="flex flex-wrap gap-2">${taskChips || '<span class="text-gray-300 text-sm">今天沒有任務</span>'}</div>
     </div>
 
-    <div class="mt-5 bg-blue-50 border border-blue-100 rounded-2xl p-4">
+    <div class="mt-5 bg-brand-light rounded-2xl p-4 flex items-center justify-between">
+      <div>
+        <div class="text-xs text-gray-500 mb-0.5">家庭代碼（分享給家人加入）</div>
+        <div class="text-xl font-bold tracking-widest text-brand">${_familyCode || '------'}</div>
+      </div>
+      <button onclick="leaveFamily()" class="text-xs text-gray-400 underline">離開家庭</button>
+    </div>
+
+    <div class="mt-3 bg-blue-50 border border-blue-100 rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-1">
         <span class="text-xl">💾</span>
         <span class="font-bold text-blue-700">資料備份與還原</span>
@@ -1656,12 +1798,7 @@ function deleteMessage(id) {
 
 // ── 資料備份與還原 ─────────────────────────────────────────────
 function exportData() {
-  const data = {};
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    data[k] = localStorage.getItem(k);
-  }
-  const json = JSON.stringify(data, null, 2);
+  const json = JSON.stringify(_cache, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -1675,18 +1812,20 @@ function importData(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     try {
       const data = JSON.parse(e.target.result);
       if (!confirm('確定要還原備份嗎？\n目前的資料將被覆蓋，此動作無法復原。')) {
-        input.value = '';
-        return;
+        input.value = ''; return;
       }
-      localStorage.clear();
-      Object.entries(data).forEach(([k, v]) => localStorage.setItem(k, v));
-      alert('✅ 還原成功！即將重新載入...');
-      location.reload();
+      showLoading('還原中...');
+      await dbSet(familyRef(''), data);
+      _cache = data;
+      hideLoading();
+      alert('✅ 還原成功！');
+      renderParentMain();
     } catch {
+      hideLoading();
       alert('⚠️ 備份檔案格式錯誤，請重新選擇正確的備份檔');
       input.value = '';
     }
@@ -1703,10 +1842,42 @@ function switchParentTab(tab) {
 }
 
 // ── Boot ──────────────────────────────────────────────────────
-initData();
-if (!S.get('pins')) {
-  showPage('page-setup');
-} else {
-  renderWelcome();
-  showPage('page-welcome');
+async function appStart() {
+  const code = localStorage.getItem('fg_family_code');
+  if (code) {
+    showLoading('載入家庭資料中...');
+    try {
+      const snap = await dbGet(ref(_db, `families/${code}`));
+      if (snap.exists()) {
+        _familyCode = code;
+        _cache = snap.val() || {};
+        setupFamilyListener();
+        hideLoading();
+        renderWelcome();
+        showPage('page-welcome');
+        return;
+      }
+    } catch { /* network error, fall through */ }
+    hideLoading();
+    localStorage.removeItem('fg_family_code');
+  }
+  showPage('page-family-select');
 }
+
+document.addEventListener('DOMContentLoaded', appStart);
+
+// ── Expose to HTML onclick handlers (required for ES modules) ──
+Object.assign(window, {
+  showPage, saveSetup, logout, goToChildLogin, goToParentLogin,
+  loginChild, loginParent,
+  switchChildTab, switchParentTab, switchTaskTab,
+  startNewFamily, joinFamilySubmit, leaveFamily,
+  approveTask, rejectTask, cancelTask,
+  redeemReward, approveReward,
+  addTask, deleteTask, showAddTaskForm,
+  addReward, deleteReward, showAddRewardForm,
+  addMessage, deleteMessage, selectEmoji,
+  filterHistory, togglePointGuide,
+  setChildGrade, exportData, importData,
+  renderChildRewards,
+});
