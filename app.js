@@ -144,9 +144,9 @@ function getDefaultTasks() {
     { id:11, name:'主動複習 / 整理筆記',           category:'高年級專屬', coins:3, emoji:'📖', daysOfWeek:[], type:'once',  targetGrade:'high', difficulty:'hard'    },
     { id:12, name:'協助規劃家庭事務',              category:'高年級專屬', coins:3, emoji:'📋', daysOfWeek:[], type:'once',  targetGrade:'high', difficulty:'hard'    },
     // ── 運動（可重複）─────────────────────────────────
-    { id:20, name:'跳繩500下',                    category:'運動',     coins:2, emoji:'🪢', daysOfWeek:[], type:'multi',  targetGrade:'all', difficulty:'medium' },
+    { id:20, name:'跳繩800下（跳完+喝水）',        category:'運動',     coins:10, emoji:'🪢', daysOfWeek:[], type:'multi',  targetGrade:'all', difficulty:'medium' },
     // ── 每週挑戰 ────────────────────────────────────────
-    { id:21, name:'本週跳繩5000下',               category:'每週挑戰', coins:5, emoji:'🏅', daysOfWeek:[], type:'weekly', targetGrade:'all', weeklyTarget:10, autoFrom:20 },
+    { id:21, name:'本週跳繩8000下',               category:'每週挑戰', coins:5, emoji:'🏅', daysOfWeek:[], type:'weekly', targetGrade:'all', weeklyTarget:10, autoFrom:20 },
     // ── 週末任務 ────────────────────────────────────────
     { id:13, name:'9點前完成早餐',    category:'週末任務', coins:1, emoji:'🍳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple' },
     { id:14, name:'公園放風30分鐘',   category:'週末任務', coins:2, emoji:'🌳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium' },
