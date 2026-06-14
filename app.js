@@ -416,6 +416,43 @@ function getBestStreak(childId) {
   return S.getOrDefault('bestStreak', {})[childId] || 0;
 }
 
+// ── 打卡照片 ──────────────────────────────────────────────────
+async function resizeImage(file, size = 110) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ratio  = Math.min(size / img.width, size / img.height);
+      canvas.width  = Math.round(img.width  * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.72));
+    };
+    img.src = url;
+  });
+}
+
+function uploadCheckInPhoto(childId) {
+  const input = document.createElement('input');
+  input.type    = 'file';
+  input.accept  = 'image/*';
+  input.capture = 'environment';
+  input.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const base64 = await resizeImage(file);
+    const photos = S.getOrDefault('checkInPhotos', {});
+    if (!photos[childId]) photos[childId] = {};
+    photos[childId][today()] = base64;
+    S.set('checkInPhotos', photos);
+    markCheckIn(childId);
+    renderChildTasks();
+  };
+  input.click();
+}
+
 function markCheckIn(childId) {
   const checkIns = S.getOrDefault('checkIns', {});
   if (!checkIns[childId]) checkIns[childId] = [];
@@ -434,6 +471,7 @@ function markCheckIn(childId) {
 
 function renderStreakWidget(childId) {
   const dates  = S.getOrDefault('checkIns', {})[childId] || [];
+  const photos = S.getOrDefault('checkInPhotos', {})[childId] || {};
   const streak = getStreak(childId);
   const best   = getBestStreak(childId);
   const now    = new Date();
@@ -442,17 +480,48 @@ function renderStreakWidget(childId) {
     const d = new Date(now);
     d.setDate(d.getDate() - (6 - i));
     const dateStr = d.toISOString().slice(0, 10);
-    return { dayName: DAY_NAMES[d.getDay()], checked: dates.includes(dateStr), isToday: dateStr === today() };
+    return {
+      dayName: DAY_NAMES[d.getDay()],
+      checked: dates.includes(dateStr),
+      isToday: dateStr === today(),
+      photo:   photos[dateStr] || null,
+    };
   });
 
-  const circlesHtml = circles.map(c => `
-    <div class="flex flex-col items-center gap-1">
-      <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold
-        ${c.checked ? 'bg-brand text-white' : c.isToday ? 'border-2 border-brand text-brand' : 'bg-gray-100 text-gray-300'}">
-        ${c.checked ? '✓' : c.isToday ? '今' : ''}
-      </div>
+  const circlesHtml = circles.map(c => {
+    if (c.photo) {
+      // 有照片：圓形縮圖，今天點擊可換照片
+      const clickAttr = c.isToday ? `onclick="uploadCheckInPhoto(${childId})" style="cursor:pointer"` : '';
+      return `<div class="flex flex-col items-center gap-1">
+        <div ${clickAttr} class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-brand">
+          <img src="${c.photo}" class="w-full h-full object-cover">
+        </div>
+        <span class="text-xs text-gray-400">週${c.dayName}</span>
+      </div>`;
+    }
+    if (c.isToday) {
+      // 今天，尚未上傳照片：相機圖示，點擊拍照
+      return `<div class="flex flex-col items-center gap-1">
+        <div onclick="uploadCheckInPhoto(${childId})"
+          class="w-9 h-9 rounded-full flex items-center justify-center border-2 border-brand text-brand cursor-pointer active:bg-brand-light">
+          📷
+        </div>
+        <span class="text-xs text-brand font-bold">今天</span>
+      </div>`;
+    }
+    if (c.checked) {
+      // 過去已打卡但無照片：打勾
+      return `<div class="flex flex-col items-center gap-1">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center bg-brand text-white text-sm font-bold">✓</div>
+        <span class="text-xs text-gray-400">週${c.dayName}</span>
+      </div>`;
+    }
+    // 未打卡
+    return `<div class="flex flex-col items-center gap-1">
+      <div class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 text-gray-300 text-sm"></div>
       <span class="text-xs text-gray-400">週${c.dayName}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   return `<div class="bg-white rounded-2xl shadow-sm p-4 mb-4">
     <div class="flex items-center justify-between mb-3">
@@ -466,6 +535,7 @@ function renderStreakWidget(childId) {
       </div>
     </div>
     <div class="flex justify-between">${circlesHtml}</div>
+    <p class="text-xs text-gray-300 text-center mt-3">點擊今天的 📷 拍照打卡</p>
   </div>`;
 }
 
@@ -1265,6 +1335,7 @@ Object.assign(window, {
   loginChild, loginParent,
   switchChildTab, switchParentTab, switchTaskTab,
   startNewFamily, joinFamilySubmit, leaveFamily,
+  uploadCheckInPhoto,
   toggleTask, submitTask, cancelTask, cancelLastTask,
   showAddTaskForm, addTask, deleteTask, setChildGrade,
   addMessage, deleteMessage,
