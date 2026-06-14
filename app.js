@@ -612,7 +612,7 @@ function buildOnceHtml(tasks, todayC) {
     const comp    = todayC.find(c => c.taskId === task.id && c.status === 'done');
     const checked = !!comp;
     html += `<div class="flex items-center p-4 gap-4 ${checked ? 'opacity-60' : ''}">
-      <div onclick="submitTask(${task.id})" class="task-checkbox ${checked ? 'checked' : ''}">
+      <div onclick="toggleTask(${task.id})" class="task-checkbox ${checked ? 'checked' : ''}">
         ${checked ? '<svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
       </div>
       <div class="flex-1 min-w-0">
@@ -658,7 +658,7 @@ function buildWeekendHtml(tasks, todayC) {
     const comp    = todayC.find(c => c.taskId === task.id && c.status === 'done');
     const checked = !!comp;
     html += `<div class="flex items-center p-4 gap-4 ${checked ? 'opacity-60' : ''}">
-      <div onclick="submitTask(${task.id})" class="task-checkbox ${checked ? 'checked' : ''}">
+      <div onclick="toggleTask(${task.id})" class="task-checkbox ${checked ? 'checked' : ''}">
         ${checked ? '<svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
       </div>
       <div class="flex-1 min-w-0">
@@ -696,6 +696,14 @@ function buildWeeklyHtml(tasks, childId) {
 }
 
 // ── 任務完成（立即標記，不需審核）───────────────────────────
+function toggleTask(taskId) {
+  const id    = window._currentChildId;
+  const comps = S.getOrDefault('completions', []);
+  const done  = comps.find(c => c.taskId === taskId && c.childId === id && c.date === today() && c.status === 'done');
+  if (done) cancelTask(taskId);
+  else submitTask(taskId);
+}
+
 function submitTask(taskId) {
   const id    = window._currentChildId;
   const tasks = S.getOrDefault('tasks', []);
@@ -1257,7 +1265,7 @@ Object.assign(window, {
   loginChild, loginParent,
   switchChildTab, switchParentTab, switchTaskTab,
   startNewFamily, joinFamilySubmit, leaveFamily,
-  submitTask, cancelTask, cancelLastTask,
+  toggleTask, submitTask, cancelTask, cancelLastTask,
   showAddTaskForm, addTask, deleteTask, setChildGrade,
   addMessage, deleteMessage,
   logFreeChoice, logCustomChoice, deleteFreeChoiceLog,
