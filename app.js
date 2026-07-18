@@ -674,13 +674,11 @@ function renderChildTasks() {
       <div class="flex -mx-5 px-0 border-b border-gray-200 bg-[#FAF7F4] overflow-x-auto">
         <button id="stab-weekend" onclick="switchTaskTab('weekend')" class="stab-btn active shrink-0 flex-1 py-2.5 text-sm text-center">每日任務</button>
         <button id="stab-multi"   onclick="switchTaskTab('multi')"   class="stab-btn shrink-0 flex-1 py-2.5 text-sm text-center text-gray-400">運動</button>
-        <button id="stab-weekly"  onclick="switchTaskTab('weekly')"  class="stab-btn shrink-0 flex-1 py-2.5 text-sm text-center text-gray-400">每週挑戰</button>
       </div>
     </div>
     <div id="stab-once-content"    class="stab-content hidden px-5 pt-3 pb-24">${buildOnceHtml(onceTasks, todayC)}</div>
     <div id="stab-multi-content"   class="stab-content hidden px-5 pt-3 pb-24">${buildMultiHtml(multiTasks, todayC)}</div>
-    <div id="stab-weekend-content" class="stab-content px-5 pt-3 pb-24">${buildWeekendHtml(weekendTasks, todayC)}</div>
-    <div id="stab-weekly-content"  class="stab-content hidden px-5 pt-3 pb-24">${buildWeeklyHtml(weeklyTasks, id)}</div>`;
+    <div id="stab-weekend-content" class="stab-content px-5 pt-3 pb-24">${buildWeekendHtml(weekendTasks, todayC)}</div>`;
 
   const defaultTab = window._currentTaskTab || 'weekend';
   if (defaultTab !== 'weekend') switchTaskTab(defaultTab);
