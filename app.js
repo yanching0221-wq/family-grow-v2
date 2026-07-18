@@ -139,7 +139,6 @@ function initData() {
       tasks.forEach(t => {
         const def = newTasks.find(d => d.id === t.id);
         if (def && !t.reminder) t.reminder = def.reminder;
-        delete t.coins; // 移除點數欄位
       });
       // 補入新任務 id:17
       if (!tasks.find(t => t.id === 17)) {
