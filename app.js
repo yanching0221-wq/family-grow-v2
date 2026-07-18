@@ -77,48 +77,57 @@ function getDefaultFreeChoices() {
 // ── 預設任務清單 ───────────────────────────────────────────────
 function getDefaultTasks() {
   return [
-    // ── 每日任務（全部小孩）─────────────────────────────
+    // ── 每日任務（暑假隱藏中）────────────────────────────
     { id:1,  name:'洗自己的便當盒',              category:'每日任務', emoji:'🍱', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
       reminder:'自己的東西自己負責，明天才有乾淨的盒子用' },
     { id:2,  name:'完成每日作業（含連絡本簽名）', category:'每日任務', emoji:'📚', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium',
       reminder:'今天的事今天完成，不留到明天' },
-    { id:3,  name:'9點前洗澡',                   category:'每日任務', emoji:'🚿', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
-      reminder:'洗完澡才能放鬆，也讓別人有時間用浴室' },
-    { id:4,  name:'做一件家事',                  category:'每日任務', emoji:'🧹', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
-      reminder:'家是大家的，每個人都有責任維持' },
-    { id:5,  name:'跟長輩打招呼',                category:'每日任務', emoji:'🙏', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
-      reminder:'回家第一件事，讓家人知道你回來了' },
-    { id:6,  name:'完成均一平台練習',             category:'每日任務', emoji:'🔤', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium',
-      reminder:'每天一點點，累積比爆發更有力' },
     { id:17, name:'自由時間到9點，洗澡且10點前關大燈', category:'每日任務', emoji:'🌙', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
       reminder:'這是今天所有自由時間的前提' },
-    // ── 低年級專屬 ──────────────────────────────────────
-    { id:7,  name:'完成音樂練習',     category:'低年級專屬', emoji:'🎵', daysOfWeek:[], type:'once', targetGrade:'low', difficulty:'simple', isPractice:true,
+    // ── 週末任務（暑假作為每日任務顯示）─────────────────
+    { id:13, name:'早上9點前完成早餐', category:'週末任務', emoji:'🍳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
+      reminder:'早餐是一天的開關，別讓它太晚開機' },
+    { id:14, name:'公園放風30分鐘',    category:'週末任務', emoji:'🌳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium',
+      reminder:'身體需要在戶外動，螢幕等你回來' },
+    { id:15, name:'跑步3K',            category:'週末任務', emoji:'🏃', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'hard',
+      reminder:'累了沒關係，配速跑完比速度更重要' },
+    { id:16, name:'倒垃圾',            category:'週末任務', emoji:'🗑️', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
+      reminder:'垃圾車不等人，這是全家的任務' },
+    { id:4,  name:'做一件家事',        category:'週末任務', emoji:'🧹', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
+      reminder:'家是大家的，每個人都有責任維持' },
+    { id:5,  name:'跟長輩打招呼',      category:'週末任務', emoji:'🙏', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
+      reminder:'回家第一件事，讓家人知道你回來了' },
+    { id:6,  name:'完成均一平台練習',  category:'週末任務', emoji:'🔤', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium',
+      reminder:'每天一點點，累積比爆發更有力' },
+    // 低年級專屬 → 週末任務
+    { id:7,  name:'完成音樂練習',        category:'週末任務', emoji:'🎵', daysOfWeek:[], type:'once', targetGrade:'low', difficulty:'simple', isPractice:true,
       reminder:'練習不是為了表演，是讓手指記住' },
-    { id:8,  name:'練習 15 分鐘',     category:'低年級專屬', emoji:'⏱️', daysOfWeek:[], type:'once', targetGrade:'low', difficulty:'medium', isPractice:true,
+    { id:8,  name:'練習 15 分鐘',        category:'週末任務', emoji:'⏱️', daysOfWeek:[], type:'once', targetGrade:'low', difficulty:'medium', isPractice:true,
       reminder:'時間不長，但要專心' },
-    { id:10, name:'主動練習（不用提醒）', category:'低年級專屬', emoji:'💪', daysOfWeek:[], type:'once', targetGrade:'low', difficulty:'hard', isPractice:true,
+    { id:10, name:'主動練習（不用提醒）', category:'週末任務', emoji:'💪', daysOfWeek:[], type:'once', targetGrade:'low', difficulty:'hard', isPractice:true,
       reminder:'自己想到就去做，這才是真正的進步' },
-    // ── 高年級專屬 ──────────────────────────────────────
-    { id:11, name:'主動複習 / 整理筆記', category:'高年級專屬', emoji:'📖', daysOfWeek:[], type:'once', targetGrade:'high', difficulty:'hard',
+    // 高年級專屬 → 週末任務
+    { id:11, name:'主動複習 / 整理筆記', category:'週末任務', emoji:'📖', daysOfWeek:[], type:'once', targetGrade:'high', difficulty:'hard',
       reminder:'整理過的東西才真的進到腦袋裡' },
-    { id:12, name:'協助規劃家庭事務',   category:'高年級專屬', emoji:'📋', daysOfWeek:[], type:'once', targetGrade:'high', difficulty:'hard',
+    { id:12, name:'協助規劃家庭事務',    category:'週末任務', emoji:'📋', daysOfWeek:[], type:'once', targetGrade:'high', difficulty:'hard',
       reminder:'參與家庭決定，你的意見很重要' },
+    // 晚上洗澡（最後）
+    { id:3,  name:'晚上9點前洗澡',      category:'週末任務', emoji:'🚿', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
+      reminder:'洗完澡才能放鬆，也讓別人有時間用浴室' },
     // ── 運動（可重複）─────────────────────────────────
-    { id:20, name:'跳繩800下（跳完+喝水）', category:'運動', emoji:'🪢', daysOfWeek:[], type:'multi', targetGrade:'all', difficulty:'medium',
+    { id:20, name:'跳繩800下（跳完+喝水）',             category:'運動', emoji:'🪢', daysOfWeek:[], type:'multi', targetGrade:'all', difficulty:'medium',
       reminder:'跳完記得補水，運動後的水分很重要' },
+    { id:22, name:'跳繩200下+開合跳100下（跳完+喝水）', category:'運動', emoji:'🪢', daysOfWeek:[], type:'multi', targetGrade:'all', difficulty:'medium',
+      reminder:'跳完記得補水' },
+    { id:23, name:'跳繩200下+弓步跳50下（跳完+喝水）',  category:'運動', emoji:'🪢', daysOfWeek:[], type:'multi', targetGrade:'all', difficulty:'medium',
+      reminder:'跳完記得補水' },
+    { id:24, name:'跳繩200下+高抬腿100下（跳完+喝水）', category:'運動', emoji:'🪢', daysOfWeek:[], type:'multi', targetGrade:'all', difficulty:'medium',
+      reminder:'跳完記得補水' },
+    { id:25, name:'跳繩200下+後踢腿100下（跳完+喝水）', category:'運動', emoji:'🪢', daysOfWeek:[], type:'multi', targetGrade:'all', difficulty:'medium',
+      reminder:'跳完記得補水' },
     // ── 每週挑戰 ────────────────────────────────────────
     { id:21, name:'本週跳繩8000下', category:'每週挑戰', emoji:'🏅', daysOfWeek:[], type:'weekly', targetGrade:'all', weeklyTarget:10, autoFrom:20,
       reminder:'一週10次，平均一天不到兩次，你可以的' },
-    // ── 週末任務 ────────────────────────────────────────
-    { id:13, name:'9點前完成早餐',  category:'週末任務', emoji:'🍳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
-      reminder:'早餐是一天的開關，別讓它太晚開機' },
-    { id:14, name:'公園放風30分鐘', category:'週末任務', emoji:'🌳', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'medium',
-      reminder:'身體需要在戶外動，螢幕等你回來' },
-    { id:15, name:'跑步3K',         category:'週末任務', emoji:'🏃', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'hard',
-      reminder:'累了沒關係，配速跑完比速度更重要' },
-    { id:16, name:'倒垃圾',         category:'週末任務', emoji:'🗑️', daysOfWeek:[], type:'once', targetGrade:'all', difficulty:'simple',
-      reminder:'垃圾車不等人，這是全家的任務' },
   ];
 }
 
@@ -147,6 +156,28 @@ function initData() {
       }
       S.set('tasks', tasks);
       S.set('data_v2_reminder', true);
+    }
+    // 暑假遷移：更新任務分類、改名、加新運動任務
+    if (!S.get('data_summer_2026')) {
+      const newDefs = getDefaultTasks();
+      let tasks = S.getOrDefault('tasks', []);
+      const moveToWeekend = [3,4,5,6,7,8,10,11,12];
+      const renameMap = { 3:'晚上9點前洗澡', 13:'早上9點前完成早餐' };
+      tasks.forEach(t => {
+        if (moveToWeekend.includes(t.id)) t.category = '週末任務';
+        if (renameMap[t.id]) t.name = renameMap[t.id];
+        const def = newDefs.find(d => d.id === t.id);
+        if (def && !t.reminder) t.reminder = def.reminder;
+      });
+      // 加入新運動任務
+      [22,23,24,25].forEach(nid => {
+        if (!tasks.find(t => t.id === nid)) {
+          const def = newDefs.find(d => d.id === nid);
+          if (def) tasks.push(def);
+        }
+      });
+      S.set('tasks', tasks);
+      S.set('data_summer_2026', true);
     }
     return;
   }
@@ -641,20 +672,18 @@ function renderChildTasks() {
       ${renderStreakWidget(id)}
       ${renderWeeklySnapshot(id)}
       <div class="flex -mx-5 px-0 border-b border-gray-200 bg-[#FAF7F4] overflow-x-auto">
-        <button id="stab-once"    onclick="switchTaskTab('once')"    class="stab-btn active shrink-0 flex-1 py-2.5 text-sm text-center">每日任務</button>
-        <button id="stab-multi"   onclick="switchTaskTab('multi')"   class="stab-btn shrink-0 flex-1 py-2.5 text-sm text-center text-gray-400">重覆任務</button>
-        <button id="stab-weekend" onclick="switchTaskTab('weekend')" class="stab-btn shrink-0 flex-1 py-2.5 text-sm text-center text-gray-400">週末任務</button>
+        <button id="stab-weekend" onclick="switchTaskTab('weekend')" class="stab-btn active shrink-0 flex-1 py-2.5 text-sm text-center">每日任務</button>
+        <button id="stab-multi"   onclick="switchTaskTab('multi')"   class="stab-btn shrink-0 flex-1 py-2.5 text-sm text-center text-gray-400">運動</button>
         <button id="stab-weekly"  onclick="switchTaskTab('weekly')"  class="stab-btn shrink-0 flex-1 py-2.5 text-sm text-center text-gray-400">每週挑戰</button>
       </div>
     </div>
-    <div id="stab-once-content"    class="stab-content px-5 pt-3 pb-24">${buildOnceHtml(onceTasks, todayC)}</div>
+    <div id="stab-once-content"    class="stab-content hidden px-5 pt-3 pb-24">${buildOnceHtml(onceTasks, todayC)}</div>
     <div id="stab-multi-content"   class="stab-content hidden px-5 pt-3 pb-24">${buildMultiHtml(multiTasks, todayC)}</div>
-    <div id="stab-weekend-content" class="stab-content hidden px-5 pt-3 pb-24">${buildWeekendHtml(weekendTasks, todayC)}</div>
+    <div id="stab-weekend-content" class="stab-content px-5 pt-3 pb-24">${buildWeekendHtml(weekendTasks, todayC)}</div>
     <div id="stab-weekly-content"  class="stab-content hidden px-5 pt-3 pb-24">${buildWeeklyHtml(weeklyTasks, id)}</div>`;
 
-  if (window._currentTaskTab && window._currentTaskTab !== 'once') {
-    switchTaskTab(window._currentTaskTab);
-  }
+  const defaultTab = window._currentTaskTab || 'weekend';
+  if (defaultTab !== 'weekend') switchTaskTab(defaultTab);
 }
 
 function switchTaskTab(type) {
